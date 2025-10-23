@@ -9,6 +9,9 @@ with st.sidebar:
     base_url = st.text_input("OpenAI Base URL", value=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"))
     api_key = st.text_input("OpenAI API Key", type="password", value=os.getenv("OPENAI_API_KEY"))
     model = st.text_input("OpenAI Model", value=os.getenv("OPENAI_MODEL", "gpt-4o-mini"))
+    if st.button("Clear Chat"):
+        st.session_state.messages = []
+        st.session_state.response_id = None
 
 client = OpenAI(api_key=api_key, base_url=base_url)
 
