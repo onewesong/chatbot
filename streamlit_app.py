@@ -45,6 +45,16 @@ def chat_stream(prompt):
                 continue
             if event.type == "response.output_text.delta":
                 yield event.delta
+            if event.type == "response.completed":
+                output = event.response.output
+                if len(output) > 0 and output[0].type == "web_search_call":
+                    query = output[0].action["query"]
+                    with st.expander(f"Search Results for: {query}", expanded=True):
+                        if len(output) > 1 and output[1].type == "message":
+                            for result in output[1].content[0].annotations:
+                                st.markdown(f'- [{result.title}]({result.url})')
+
+
 
 # 输入框
 if prompt := st.chat_input():
