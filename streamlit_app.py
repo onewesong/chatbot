@@ -9,11 +9,15 @@ with st.sidebar:
     base_url = st.text_input("OpenAI Base URL", value=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"))
     api_key = st.text_input("OpenAI API Key", type="password", value=os.getenv("OPENAI_API_KEY"))
     model = st.text_input("OpenAI Model", value=os.getenv("OPENAI_MODEL", "gpt-4o-mini"))
+    enable_web_search = st.toggle("Enable Web Search", value=False)
     if st.button("Clear Chat"):
         st.session_state.messages = []
         st.session_state.response_id = None
 
 client = OpenAI(api_key=api_key, base_url=base_url)
+tools = []
+if enable_web_search:
+    tools.append({"type": "web_search"})
 
 # 聊天历史存储在 session state
 if "messages" not in st.session_state:
@@ -33,6 +37,7 @@ def chat_stream(prompt):
         model=model,
         input=prompt,
         previous_response_id=st.session_state.get("response_id", None),
+        tools=tools,
     ) as stream:
         for event in stream:
             if event.type == "response.created":
